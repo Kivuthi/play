@@ -1,98 +1,332 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  Pressable,
+  View,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
+export default function Register() {
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [nationalId, setNationalId] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+
+  function handleContinue() {
+    if (!fullName.trim() || !username.trim() || !email.trim() || !nationalId.trim() ||!password.trim() ||passwordConfirmation.trim()) {
+      Alert.alert("Missing details", "Please fill in all three fields.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      Alert.alert("Invalid email", "Please enter a valid email address.");
+      return;
+    }
+
+    if (password.trim().length < 8) {
+      Alert.alert("Password should have at least 8 characters");
+      return;
+    }
+    if (!/[A-Z]/.test(password.trim())) {
+      Alert.alert("Password should have at least one uppercase letter");
+      return;
+    }
+    if (!/[a-z]/.test(password.trim())) {
+      Alert.alert("Password should have at least one lowercase letter");
+      return;
+    }
+    if (!/[0-9]/.test(password.trim())) {
+      Alert.alert("Password should have at least one number");
+      return;
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password.trim())) {
+      Alert.alert("Password should have at least one special character");
+      return;
+    }
+
+    if (password.trim() !== passwordConfirmation.trim()) {
+      Alert.alert("Password mismatch", "Passwords do not match. Please try again.");
+      return;
+    }
+
+    Alert.alert(
+      "Looking good!",
+      "Your details are ready. We'll build the next step soon."
     );
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <LinearGradient
+      colors={["#1a2a6c", "#b21f1f", "#fdbb2d", "#5e4a3a"]}
+      style={styles.background}
+    >
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
+            <View style={styles.logo}>
+              <Text style={styles.logoText}>✦</Text>
+            </View>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+            <Text style={styles.brand}>LET'S PLAY</Text>
+            <Text style={styles.heading}>Create your account</Text>
+            <Text style={styles.subtitle}>
+              Your next adventure starts here.
+            </Text>
+          </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+          <View style={styles.card}>
+            <Text style={styles.cardHeading}></Text>
+            <Text style={styles.cardSubtitle}>
+              Enter your details to get started.
+            </Text>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+            <Text style={styles.label}>Full name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. Alex Johnson"
+              placeholderTextColor="#9CA3AF"
+              value={fullName}
+              onChangeText={setFullName}
+              autoCapitalize="words"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Choose a username"
+              placeholderTextColor="#9CA3AF"
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
+
+            <Text style={styles.label}>Email address</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="you@example.com"
+              placeholderTextColor="#9CA3AF"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+            />
+
+            <Text style={styles.label}>National ID</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your National ID"
+              placeholderTextColor="#9CA3AF"
+              value={nationalId}
+              onChangeText={setNationalId}
+              keyboardType="numeric"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+            />
+
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              placeholderTextColor="#9CA3AF"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+            />
+
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm your password"
+              placeholderTextColor="#9CA3AF"
+              value={passwordConfirmation}
+              onChangeText={setPasswordConfirmation}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+            />
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={handleContinue}
+            >
+              <Text style={styles.buttonText}>Continue  →</Text>
+            </Pressable>
+
+            <Text style={styles.footerText}>
+              Already have an account?{" "}
+              <Text
+                style={styles.loginText}
+                onPress={() =>
+                  Alert.alert("Coming soon", "We'll build the login screen next.")
+                }
+              >
+                Log in
+              </Text>
+            </Text>
+          </View>
+
+          <Text style={styles.bottomText}>
+            Made for good times and new connections ✨
+          </Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  flex: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
   },
-  safeArea: {
+  background: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: 22,
+    paddingVertical: 36,
   },
-  title: {
-    textAlign: 'center',
+  header: {
+    alignItems: "center",
+    marginBottom: 28,
   },
-  code: {
-    textTransform: 'uppercase',
+  logo: {
+    width: 58,
+    height: 58,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.22)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.45)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  logoText: {
+    color: "#FFFFFF",
+    fontSize: 32,
+  },
+  brand: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 4,
+    marginBottom: 12,
+  },
+  heading: {
+    color: "#FFFFFF",
+    fontSize: 30,
+    fontWeight: "800",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: "#FFFFFF",
+    opacity: 0.9,
+    fontSize: 15,
+    textAlign: "center",
+  },
+  card: {
+    width: "100%",
+    maxWidth: 440,
+    alignSelf: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 26,
+    padding: 24,
+    shadowColor: "#3B0764",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  cardHeading: {
+    color: "#18112B",
+    fontSize: 23,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+  cardSubtitle: {
+    color: "#777184",
+    fontSize: 14,
+    marginBottom: 24,
+  },
+  label: {
+    color: "#302744",
+    fontSize: 14,
+    fontWeight: "700",
+    marginBottom: 8,
+  },
+  input: {
+    height: 52,
+    borderWidth: 1,
+    borderColor: "#E7E2EE",
+    borderRadius: 13,
+    paddingHorizontal: 15,
+    fontSize: 15,
+    color: "#241A35",
+    backgroundColor: "#FCFAFF",
+    marginBottom: 18,
+  },
+  button: {
+    minHeight: 54,
+    borderRadius: 15,
+    backgroundColor: "#7028D8",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 6,
+  },
+  buttonPressed: {
+    opacity: 0.82,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  footerText: {
+    textAlign: "center",
+    color: "#777184",
+    fontSize: 13,
+    marginTop: 22,
+  },
+  loginText: {
+    color: "#7028D8",
+    fontWeight: "800",
+  },
+  bottomText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 24,
+    opacity: 0.9,
   },
 });
