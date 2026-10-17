@@ -21,9 +21,17 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  function handleContinue() {
-    if (!fullName.trim() || !username.trim() || !email.trim() || !nationalId.trim() ||!password.trim() ||passwordConfirmation.trim()) {
-      Alert.alert("Missing details", "Please fill in all three fields.");
+  
+  async function handleContinue() {
+    if (
+      !fullName.trim() ||
+      !username.trim() ||
+      !email.trim() ||
+      !nationalId.trim() ||
+      !password.trim() ||
+      !passwordConfirmation.trim()
+    ) {
+      Alert.alert("Missing fields", "Please fill in all fields.");
       return;
     }
 
@@ -32,37 +40,74 @@ export default function Register() {
       return;
     }
 
-    if (password.trim().length < 8) {
-      Alert.alert("Password should have at least 8 characters");
-      return;
-    }
-    if (!/[A-Z]/.test(password.trim())) {
-      Alert.alert("Password should have at least one uppercase letter");
-      return;
-    }
-    if (!/[a-z]/.test(password.trim())) {
-      Alert.alert("Password should have at least one lowercase letter");
-      return;
-    }
-    if (!/[0-9]/.test(password.trim())) {
-      Alert.alert("Password should have at least one number");
-      return;
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password.trim())) {
-      Alert.alert("Password should have at least one special character");
+    if (password.length < 8) {
+      Alert.alert("Invalid password", "Password must have at least 8 characters.");
       return;
     }
 
-    if (password.trim() !== passwordConfirmation.trim()) {
-      Alert.alert("Password mismatch", "Passwords do not match. Please try again.");
+    if (!/[A-Z]/.test(password)) {
+      Alert.alert("Invalid password", "Include at least one uppercase letter.");
       return;
     }
 
-    Alert.alert(
-      "Looking good!",
-      "Your details are ready. We'll build the next step soon."
-    );
+    if (!/[a-z]/.test(password)) {
+      Alert.alert("Invalid password", "Include at least one lowercase letter.");
+      return;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      Alert.alert("Invalid password", "Include at least one number.");
+      return;
+    }
+
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      Alert.alert("Invalid password", "Include at least one special character.");
+      return;
+    }
+
+    if (password !== passwordConfirmation) {
+      Alert.alert("Password mismatch", "Passwords do not match.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://192.168.1.12:3000/api/v1/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName: fullName.trim(),
+            username: username.trim(),
+            email: email.trim(),
+            nationalId: nationalId.trim(),
+            password,
+            passwordConfirmation,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        Alert.alert("Registration failed", data.message || "Please try again.");
+        return;
+      }
+
+      Alert.alert("Success", data.message || "Registration successful!");
+
+    } 
+    catch (error) {
+      console.error("Registration error:", error);
+      Alert.alert(
+        "Connection error",
+        "Could not reach the server. Check your connection and try again."
+      );
+    }
   }
+
 
   return (
     <LinearGradient
