@@ -1,4 +1,5 @@
 
+import {useRouter} from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -13,6 +14,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
+
 export default function Register() {
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -20,6 +22,7 @@ export default function Register() {
   const [nationalId, setNationalId] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const router = useRouter();
 
   
   async function handleContinue() {
@@ -72,7 +75,7 @@ export default function Register() {
 
     try {
       const response = await fetch(
-        "http://192.168.1.12:3000/api/v1/auth/register",
+        "http://192.168.100.201:3000/api/v1/auth/register",
         {
           method: "POST",
           headers: {
@@ -97,6 +100,10 @@ export default function Register() {
       }
 
       Alert.alert("Success", data.message || "Registration successful!");
+      
+      setTimeout(() => {
+        router.replace("/profile-setup");
+      }, 2000);
 
     } 
     catch (error) {
@@ -111,7 +118,8 @@ export default function Register() {
 
   return (
     <LinearGradient
-      colors={["#1a2a6c", "#b21f1f", "#fdbb2d", "#5e4a3a"]}
+      colors={["#6A9113", "#141517" ]}
+      locations={[0, 0.1]}
       style={styles.background}
     >
       <KeyboardAvoidingView
@@ -344,7 +352,7 @@ const styles = StyleSheet.create({
   button: {
     minHeight: 54,
     borderRadius: 15,
-    backgroundColor: "#7028D8",
+    backgroundColor: "#6A9113",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 6,
@@ -364,7 +372,7 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   loginText: {
-    color: "#7028D8",
+    color: "#6A9113",
     fontWeight: "800",
   },
   bottomText: {

@@ -1,5 +1,7 @@
 
 import { useState } from "react";
+import { Image, TouchableOpacity } from "react-native";
+import DocumentPicker from "react-native-document-picker";
 import {
   Alert,
   StyleSheet,
@@ -11,13 +13,26 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function ProfileSetup() {
-  const [displayName, setDisplayName] = useState("");
+  const [singlefile, setSingleFile] = useState(null);
+  const [birthDate, setBirthDate] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
 
+  const selectFile = async () => {
+    try {
+      const res = await DocumentPicker.pickSingle({
+        type: [DocumentPicker.types.images],
+      });
+      setSingleFile(res);
+    }
+    catch (err) {
+      console.error(err);
+    }
+  };
+
   function handleContinue() {
-    if (!displayName.trim()) {
-      Alert.alert("Display name required", "Enter the name people will see.");
+    if (!birthDate.trim()) {
+      Alert.alert("Birth date required", "Enter your birth date.");
       return;
     }
 
@@ -26,7 +41,8 @@ export default function ProfileSetup() {
 
   return (
     <LinearGradient
-      colors={["#1a2a6c", "#7028D8", "#b21f1f"]}
+      colors={["#6A9113", "#141517" ]}
+      locations={[0, 0.1]}
       style={styles.background}
     >
       <View style={styles.container}>
@@ -39,24 +55,24 @@ export default function ProfileSetup() {
         </Text>
 
         <View style={styles.card}>
-          <View style={styles.avatar}>
+          <TouchableOpacity style={styles.avatar} onPress={selectFile}>
             <Text style={styles.avatarText}>+</Text>
-          </View>
+          </TouchableOpacity>
 
           <Text style={styles.photoHint}>
-            Add a profile photo later
+            Add a profile photo
           </Text>
 
-          <Text style={styles.label}>Display name</Text>
+          <Text style={styles.label}>Birth Date</Text>
           <TextInput
             style={styles.input}
-            placeholder="What should people call you?"
+            placeholder="When were you born?"
             placeholderTextColor="#9CA3AF"
-            value={displayName}
-            onChangeText={setDisplayName}
+            value={birthDate}
+            onChangeText={setBirthDate}
           />
 
-          <Text style={styles.label}>About me</Text>
+          <Text style={styles.label}>Bio</Text>
           <TextInput
             style={[styles.input, styles.bioInput]}
             placeholder="Share a little about yourself..."
@@ -167,7 +183,7 @@ const styles = StyleSheet.create({
   button: {
     minHeight: 54,
     borderRadius: 15,
-    backgroundColor: "#7028D8",
+    backgroundColor: "#6A9113",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 6,
