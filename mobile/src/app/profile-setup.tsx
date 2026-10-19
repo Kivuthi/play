@@ -1,34 +1,43 @@
 
 import { useState } from "react";
-import { Image, TouchableOpacity } from "react-native";
-import DocumentPicker from "react-native-document-picker";
 import {
   Alert,
+  Image,
   StyleSheet,
   Text,
   TextInput,
   Pressable,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import * as ImagePicker from "expo-image-picker";
 
 export default function ProfileSetup() {
-  const [singlefile, setSingleFile] = useState(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [birthDate, setBirthDate] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
 
-  const selectFile = async () => {
+  async function selectFile() {
     try {
-      const res = await DocumentPicker.pickSingle({
-        type: [DocumentPicker.types.images],
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
       });
-      setSingleFile(res);
+
+      if (!result.canceled) {
+        setProfileImage(result.assets[0].uri);
+      }
+    } catch {
+      Alert.alert(
+        "Image selection failed",
+        "Please try selecting your photo again."
+      );
     }
-    catch (err) {
-      console.error(err);
-    }
-  };
+  }
 
   function handleContinue() {
     if (!birthDate.trim()) {
@@ -41,7 +50,7 @@ export default function ProfileSetup() {
 
   return (
     <LinearGradient
-      colors={["#6A9113", "#141517" ]}
+      colors={["#6A9113", "#141517"]}
       locations={[0, 0.1]}
       style={styles.background}
     >
@@ -55,12 +64,23 @@ export default function ProfileSetup() {
         </Text>
 
         <View style={styles.card}>
-          <TouchableOpacity style={styles.avatar} onPress={selectFile}>
-            <Text style={styles.avatarText}>+</Text>
+          <TouchableOpacity
+            style={styles.avatar}
+            onPress={selectFile}
+            activeOpacity={0.8}
+          >
+            {profileImage ? (
+              <Image
+                source={{ uri: profileImage }}
+                style={styles.avatarImage}
+              />
+            ) : (
+              <Text style={styles.avatarText}>+</Text>
+            )}
           </TouchableOpacity>
 
           <Text style={styles.photoHint}>
-            Add a profile photo
+            {profileImage ? "Tap to change photo" : "Add a profile photo"}
           </Text>
 
           <Text style={styles.label}>Birth Date</Text>
@@ -147,6 +167,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
   },
   avatarText: {
     fontSize: 38,

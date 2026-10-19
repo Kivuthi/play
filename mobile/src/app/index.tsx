@@ -102,7 +102,7 @@ export default function Register() {
       Alert.alert("Success", data.message || "Registration successful!");
       
       setTimeout(() => {
-        router.replace("/profile-setup");
+        router.replace("/emailVerification");
       }, 2000);
 
     } 
